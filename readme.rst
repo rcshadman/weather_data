@@ -53,7 +53,7 @@ jupyter notebook
 #### Extract more Weather Data :
 
 - Run the program from the project directory
-- Command format - python3 data_provider.py [ fetch | compile | test ] --month 201702 or check the month!
+- Command format - python3 data_provider.py [ fetch | compile | test ] --month 201702
 
 ```
 python3 data_provider.py fetch compile --month 201702

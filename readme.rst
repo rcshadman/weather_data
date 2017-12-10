@@ -38,6 +38,10 @@ sudo pip3 install -r requirement.txt
 python3 weather_model.py 200
 ```
 
+#### Output:
+
+- The output will be on the command line and also written to a file in the Output folder.
+
 
 #### Notebook:
 

@@ -45,7 +45,7 @@ python3 weather_model.py 200
 
 #### Notebook:
 
-- The jupyter book can be used the to the data analysis and visualizations included in it.
+- The jupyter book can be used to see the data analysis and visualizations included in it.
 
 ##### To View the notebook
 

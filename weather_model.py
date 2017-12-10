@@ -6,23 +6,14 @@
 """
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ the Free Software Foundation; 
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- MA 02110-1301, USA.
-
- """
+"""
+__author__ = "Md Shadman Alam"
+__email__ = "rcshadman@gmail.com"
 
 
-
+import __future__
 import numpy as np
 import pandas as pd
 from pprint import pprint as pp
@@ -40,9 +31,11 @@ from time import sleep
 import datetime
 import warnings
 warnings.filterwarnings("ignore")
-# import time
 
+# Set random seed to 0
 random.seed(0)
+
+# Look for Geographical data in order [ latitude , longitude and elevation ]
 GEOGRAPHICAL_DATA = {
     'Sydney': [-33.86, 151.20, 19],
     'Melbourne': [-37.66, 144.84, 124],
@@ -111,7 +104,6 @@ def prepare_data(df):
             """
             helper function
             """
-
             if cond in weather_conditions['Rain']:
                 cond = 'Rain'
             elif cond in weather_conditions['Clear']:
@@ -169,7 +161,6 @@ def learn(trainingData, features_to_drop):
     """
 
     trainingY = trainingData['label']
-
     trainingData.drop(features_to_drop, axis=1, inplace=True)
 
     # Split my data into train and test to avoid overfiting
@@ -213,7 +204,7 @@ def create_predictors(dff):
             # print('City: {} '.format(city))
             classifier = learn(trainingData, features_to_drop)
             city_weather_predictor.update({city: classifier})
-
+            
             # generate covariance n mean for each city n store it
             # city_stats_meta
             statistics = trainingData.describe()
@@ -225,60 +216,72 @@ def create_predictors(dff):
             cov = statistics[['Temp', 'Pressure', 'Humidity']].cov()
 
             city_stats_meta.update({city: [mean, cov]})
-
+        
     except Exception as e:
         print(e)
 
     return city_weather_predictor, city_stats_meta
 
 
-def generate_weather_data(**kwarg):
-    """
-    Generates weather data for each city and then predicts the condition.
-    """
 
-    try:
-        weather_generator = np.random.multivariate_normal
-        city_list = [each_city for each_city in GEOGRAPHICAL_DATA.keys()]
-        city = np.random.choice(city_list)
-        generated_values = weather_generator( *kwarg['city_stats'][city] ).tolist()
-        # print(generated_values)
-        # adding day and time to generated weather data, to predict the
-        # condition
-        
-        day, hour = datetime.datetime.now().day, datetime.datetime.now().hour
-        generated_values = [day, hour] + generated_values
 
-        predicted_value = kwarg['predictor'][city].predict([generated_values])[0]
+def write_to_file(output):
+  """
+  Create an output  directory if doesnt exist and writes the output string to file.
+  """
+  current_directory = os.getcwd()
+  output_directory = os.path.join(current_directory, 'Output')
+  if not os.path.exists(output_directory):
+    os.makedirs(output_directory)
 
-        condition = kwarg['weather_lookup'][predicted_value]
-        temp = generated_values[2]
-        pressure = generated_values[3]
-        humidity = generated_values[4]
+  output_filepath = os.path.join(output_directory, 'Weather_Data.txt')
+  
+  with open(output_filepath,'a') as output_file:
+    output_file.write( output+'\n')
+    output_file.flush()
 
-        # LocalTime = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
-        localtime = '{:%Y-%m-%dT%H:%M:%SZ}'.format(datetime.datetime.now())
-        position = GEOGRAPHICAL_DATA[city]
+def generate_weather(**kwarg):
+  """
+   Generates weather data for each city ,predicts the condition and generate the outpur string
+  """
 
-        output_dict = {
-            'city': city,
-            'lat': position[0],
-            'long': position[1],
-            'elevation': position[2],
-            'localtime': localtime,
-            'condition': condition,
-            'temp': temp,
-            'pressure': pressure,
-            'humidity': humidity
-        }
+  # Transform the weather data for generating the output string
+  weather_df = kwarg['weather_data']
+  weather_df = weather_df[['City','Day','Hour','Temp','Pressure','Humidity']]
+  weather_df = weather_df.iloc[:,0:8].dropna(axis=0,how='any')
+  weather_df = weather_df.sample(frac=1).reset_index(drop=True)
+  weather_df = weather_df.sort_values(['Day','Hour'])
 
-    except Exception as e:
-        print(e)
+  # Generate samples
+  for i in range(0,kwarg['no_of_samples']):
+     
+      row = weather_df.iloc[i]
+      city,day,hour,temp, pressure, humidity = row     
+      predicted_value = kwarg['predictor'].get(city).predict([ row[1:] ])[0]
+      condition = kwarg['weather_lookup'][ predicted_value ]
+      time = '{:02}:{:02}:{:02}'.format(hour,random.randint(0,60),random.randint(0,60))
+      date = '2017-11-{:02}'.format(day)
+      localtime = time + 'T' + date + 'Z'
+      position = GEOGRAPHICAL_DATA[city]
 
-    output = '{city}|{lat},{long},{elevation}|{localtime}|{condition}|+{temp:.01f}|{pressure:.01f}|{humidity:.0f}'.format(
-        **output_dict)
+      output_dict = {
+      'city':city,
+      'lat':position[0],
+      'long':position[1],
+      'elevation':position[2],
+      'localtime':localtime,
+      'condition':condition,
+      'temp':temp,
+      'pressure':pressure,
+      'humidity':humidity
+      }
 
-    return 'ERROR' if output in ('', None) else output
+      output_string = '''{city}|{lat},{long},{elevation}|{localtime}|'''.format(**output_dict)
+      output_string += '''{condition}|+{temp:.01f}|{pressure:.01f}|{humidity:.0f}'''.format(**output_dict)
+      sleep(0.1)
+
+      print(output_string)
+      write_to_file(output_string)
 
 
 def main(argv):
@@ -298,28 +301,29 @@ def main(argv):
           ipdb.set_trace()
 
       NUMBER_OF_SAMPLES =  int(argv[1])
+      
+      if NUMBER_OF_SAMPLES > 0 and NUMBER_OF_SAMPLES <= 4000:
+        # Load the data
+        historical_data = pd.read_csv('training_data/input_data_201710.csv')
+        weather_data = pd.read_csv('training_data/input_data_201711.csv')
+        # Clean and format the data
+        clean_data, label_map = prepare_data(historical_data)
+        # created predictors and generators
+        predictor, city_stats_meta = create_predictors(clean_data)
+        # generate weather data  
+        param = {
+                'predictor':predictor,
+                'city_stats':city_stats_meta,
+                'weather_lookup':label_map,
+                'weather_data': weather_data,
+                'no_of_samples': NUMBER_OF_SAMPLES
+                }
 
-      # Load the data
-      historical_data = pd.read_csv('training_data/input_data_nov.csv')
-
-      # Clean and format the data
-      clean_data, label_map = prepare_data(historical_data)
-
-      # created predictors and generators
-      predictor, city_stats_meta = create_predictors(clean_data)
-
-      # generate weather data
-      for i in range(NUMBER_OF_SAMPLES):
-          
-          param = {
-                  'predictor':predictor,
-                  'city_stats':city_stats_meta,
-                  'weather_lookup':label_map
-                  }
-
-          weather = generate_weather_data(**param)
-          sleep(0.2)
-          print(weather)
+        # weather = generate_weather_data(**param)
+        generate_weather(**param)
+      
+      else:
+        raise Exception('Please enter a valid number of samples, beteween 1 and 4000')
          
     except Exception as e:
       print(e)
@@ -328,3 +332,14 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv)
+
+
+
+
+
+
+
+
+
+
+

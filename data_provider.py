@@ -3,27 +3,18 @@
 
 # data_provider.py
 
+
 """
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ the Free Software Foundation; 
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ Run this generatate new training data. 
+ Note: The api is limited to 10 requests per minute, therefore we have a delay of 6.5 seconds between each call
+ """
 
- You should have received a copy of the GNU General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
- MA 02110-1301, USA.
-
-Run this generatate new training data. 
-Note: The api is limited to 10 requests per minute, therefore we have a delay of 6.5 seconds between each call
-"""
-
-
+__author__ = "Md Shadman Alam"
+__email__ = "rcshadman@gmail.com"
 
 
 import requests as web

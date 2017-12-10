@@ -1,3 +1,5 @@
+
+
 # Weather Generator
 
 #### Aim : To generate weather data for cities in given format
@@ -16,8 +18,10 @@
         
         
 #### Assumptions:
-- There are only weather types - Rain, Snow and Sunny 
 
+- There are only three weather types - Rain, Snow and Sunny 
+
+- 
 
 #### Download the dependencies:
 
@@ -27,6 +31,7 @@ sudo pip3 install -r requirement.txt
 ```
 
 #### Run :
+
 - Run the program from the project directory
 - Must provide number of samples as argumemts ranging between 0-4000
 ```
@@ -35,6 +40,7 @@ python3 weather_model.py 200
 
 
 #### Notebook:
+
 - The jupyter book can be used the to the data analysis and visualizations included in it.
 
 ##### To View the notebook
@@ -45,6 +51,7 @@ jupyter notebook
 
 
 #### Resources :
+
  * [Wunder Ground](https://serbian.wunderground.com/weather/api/d/docs?d=index) for Weather data.
  * [Sci Kit Learn](http://scikit-learn.org/) for analytics
  

@@ -21,7 +21,7 @@
 
 - There are only three weather types - Rain, Snow and Sunny 
 
-- 
+- Its a dummy simulator and will not be put against test. 
 
 #### Download the dependencies:
 

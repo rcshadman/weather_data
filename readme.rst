@@ -30,7 +30,7 @@
 sudo pip3 install -r requirement.txt 
 ```
 
-#### Run :
+#### Run Weather Simulator :
 
 - Run the program from the project directory
 - Must provide number of samples as argumemts ranging between 0-4000
@@ -49,6 +49,15 @@ python3 weather_model.py 200
 jupyter notebook
 ```
 
+
+#### Extract more Weather Data :
+
+- Run the program from the project directory
+- Command format - python3 data_provider.py [ fetch | compile | test ] --month 201702 or check the month!
+
+```
+python3 data_provider.py fetch compile --month 201702
+```
 
 #### Resources :
 
